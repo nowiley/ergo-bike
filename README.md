@@ -42,45 +42,45 @@ users_dictionary["john"] = john_dictionary
 ### Functions
 ### knee_extension_angle(bike_vector, body_vector, CA)
 **Description:**
-	Calculates knee extension angle for a given bike and body system and at a specific crank angle (CA)
+Calculates knee extension angle for a given bike and body system and at a specific crank angle (CA)
 **Input:**
-    bike_vector
-    body_vector
-    CA in **radians**
+bike_vector
+body_vector
+CA in **radians**
 **Output:**
 Knee extension angle in **radians** or None if inputs violate triangle inequality.
 
 ### back_armpit_angles(bike_vector, body_vector, arm_angle)
 **Description:**
-    Calculates back angle and armpit to wrist angle for a given bike and body system and at a specific arm angle.
+Calculates back angle and armpit to wrist angle for a given bike and body system and at a specific arm angle.
 **Input:**
-    bike_vector
-    body_vector
-    arm_angle in **degrees**
+bike_vector
+body_vector
+arm_angle in **degrees**
 **Output:**
-    Tuple of back angle in **radians** and armpit to wrist angle in **radians** or None if inputs violate triangle inequality.
+Tuple of back angle in **radians** and armpit to wrist angle in **radians** or None if inputs violate triangle inequality.
 
 ### all_angles(bike_vector, body_vector, arm_angle)
 **Description:**
 * Uses knee_extension_angle and back_armpit_angles to produce one tuple corresponding to the minimum knee extension angle, back angle, and armpit to wrist angle. 
 * Minimum knee extension angle is calculated on a [0, 2π] interval and returns None if it ever violates the triangle inequality (the bike body system cannot complete a full rotation of the cranks). 
 **Input:**
-    bike_vector
-    body_vector
-    arm_angle in **degrees**
+bike_vector
+body_vector
+arm_angle in **degrees**
 **Output:**
-    Tuple of minimum knee extension angle in **degrees**, back angle in **degrees**, and armpit to wrist angle in **degrees** or None if inputs violate triangle inequality for certain angle.
+Tuple of minimum knee extension angle in **degrees**, back angle in **degrees**, and armpit to wrist angle in **degrees** or None if inputs violate triangle inequality for certain angle.
 
 ### prob_dists(bike_vector, body_vector, arm_angle, use="road")
 **Description:**
-    Uses all angles and USE_DICT to calculate probabilities of the angles in the given bike and body system using Gaussian curve and CDF. Returns None for angles that are None.
+Uses all angles and USE_DICT to calculate probabilities of the angles in the given bike and body system using Gaussian curve and CDF. Returns None for angles that are None.
 **Input:**
-    bike_vector
-    body_vector
-    arm_angle in **degrees**
-    use: String corresponding to usecase in USE_DICT ("road", "mtb", "commute")
+bike_vector
+body_vector
+arm_angle in **degrees**
+use: String corresponding to usecase in USE_DICT ("road", "mtb", "commute")
 **Output:**
-    Tuple of probabilities of minimum knee extension angle, back angle, and armpit to wrist angle or None if inputs violate triangle inequality for certain angle.
+Tuple of probabilities of minimum knee extension angle, back angle, and armpit to wrist angle or None if inputs violate triangle inequality for certain angle.
 
 ### all_noise(bike_vector, body_vector, step_size, n)
 **Description:**  
@@ -88,19 +88,19 @@ Knee extension angle in **radians** or None if inputs violate triangle inequalit
 * Produces “nan” if a test violated the triangle inequality.
 * Note: arm_angle is defaulted to 150 degrees.
 **Input:**
-    bike_vector
-    body_vector
-    step_size: Step size of noise in each dimension
-    n: Number of tests to run for each dimension
+bike_vector
+body_vector
+step_size: Step size of noise in each dimension
+n: Number of tests to run for each dimension
 **Output:**
-    Prints noise table for each dimension of bike and body with 2n-1 rows in each table.
+Prints noise table for each dimension of bike and body with 2n-1 rows in each table.
 
 ### analyze_folder(folder_path, users_dictionary)
 **Description:**
 * Analyzes all images in a folder and compares the predicted dimensions of the body to the actual dimensions of the body.
 * Produces a table comparing the predicted and actual dimensions.
 **Input:**
-    folder_path: Path to folder containing images
-    users_dictionary: Dictionary mapping user name to dictionary with body dimensions mapped to their name.
+folder_path: Path to folder containing images
+users_dictionary: Dictionary mapping user name to dictionary with body dimensions mapped to their name.
 **Output:**
-    Prints table comparing predicted and actual dimensions.
+Prints table comparing predicted and actual dimensions.
