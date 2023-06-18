@@ -40,7 +40,7 @@ users_dictionary["john"] = john_dictionary
 ```
 
 ### Functions
-#### knee_extension_angle(bike_vector, body_vector, CA)
+### knee_extension_angle(bike_vector, body_vector, CA)
 **Description:**
 	Calculates knee extension angle for a given bike and body system and at a specific crank angle (CA)
 **Input:**
@@ -50,7 +50,7 @@ users_dictionary["john"] = john_dictionary
 **Output:**
 Knee extension angle in **radians** or None if inputs violate triangle inequality.
 
-#### back_armpit_angles(bike_vector, body_vector, arm_angle)
+### back_armpit_angles(bike_vector, body_vector, arm_angle)
 **Description:**
     Calculates back angle and armpit to wrist angle for a given bike and body system and at a specific arm angle.
 **Input:**
@@ -60,7 +60,7 @@ Knee extension angle in **radians** or None if inputs violate triangle inequalit
 **Output:**
     Tuple of back angle in **radians** and armpit to wrist angle in **radians** or None if inputs violate triangle inequality.
 
-#### all_angles(bike_vector, body_vector, arm_angle)
+### all_angles(bike_vector, body_vector, arm_angle)
 **Description:**
 * Uses knee_extension_angle and back_armpit_angles to produce one tuple corresponding to the minimum knee extension angle, back angle, and armpit to wrist angle. 
 * Minimum knee extension angle is calculated on a [0, 2π] interval and returns None if it ever violates the triangle inequality (the bike body system cannot complete a full rotation of the cranks). 
@@ -71,7 +71,7 @@ Knee extension angle in **radians** or None if inputs violate triangle inequalit
 **Output:**
     Tuple of minimum knee extension angle in **degrees**, back angle in **degrees**, and armpit to wrist angle in **degrees** or None if inputs violate triangle inequality for certain angle.
 
-#### prob_dists(bike_vector, body_vector, arm_angle, use="road")
+### prob_dists(bike_vector, body_vector, arm_angle, use="road")
 **Description:**
     Uses all angles and USE_DICT to calculate probabilities of the angles in the given bike and body system using Gaussian curve and CDF. Returns None for angles that are None.
 **Input:**
@@ -82,7 +82,7 @@ Knee extension angle in **radians** or None if inputs violate triangle inequalit
 **Output:**
     Tuple of probabilities of minimum knee extension angle, back angle, and armpit to wrist angle or None if inputs violate triangle inequality for certain angle.
 
-#### all_noise(bike_vector, body_vector, step_size, n)
+### all_noise(bike_vector, body_vector, step_size, n)
 **Description:**  
 * Produces tables mapping noise in each dimension of the bike/body system to the respective change to knee extension angle, back angle, and armpit wrist angle.
 * Produces “nan” if a test violated the triangle inequality.
@@ -95,7 +95,7 @@ Knee extension angle in **radians** or None if inputs violate triangle inequalit
 **Output:**
     Prints noise table for each dimension of bike and body with 2n-1 rows in each table.
 
-#### analyze_folder(folder_path, users_dictionary)
+### analyze_folder(folder_path, users_dictionary)
 **Description:**
 * Analyzes all images in a folder and compares the predicted dimensions of the body to the actual dimensions of the body.
 * Produces a table comparing the predicted and actual dimensions.
