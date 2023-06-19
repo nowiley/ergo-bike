@@ -40,6 +40,10 @@ Includes tools to calculate and analyze the ergonomics of bike/body systems.
 2. Created a function to compare the predicted dimensions of the body to the actual dimensions of the body. This function can analyze all images in a certain file path following a naming format and can output a table to compare the predicted and actual dimensions.
 
 ## Usage and Documentation
+
+### What are these dimensions and angles?
+![bike angles diagram](/assets/angles-diagram.jpeg)
+
 ### Common Inputs
 bike_vector: NumPy array in form [seat x, seat y, handlebar x, handlebar y, crank length].T
 
