@@ -1,6 +1,21 @@
 # ergo-bike
 Includes tools to calculate and analyze the ergonomics of bike/body systems.
 
+## Table of Contents
+1. [Project Goals](#project-goals)
+2. [Process and Methodology](#process-and-methodology)
+3. [Usage and Documentation](#usage-and-documentation)
+    1. [Common Inputs](#common-inputs)
+    2. [Most Useful Function Examples](#most-useful-function-examples)
+    3. [Functions](#functions)
+        1. [knee_extension_angle](#knee_extension_anglebike_vector-body_vector-ca)
+        2. [back_armpit_angles](#back_armpit_anglesbike_vector-body_vector-arm_angle)
+        3. [all_angles](#all_anglesbike_vector-body_vector-arm_angle)
+        4. [prob_dists](#prob_distsbike_vector-body_vector-arm_angle-use="road")
+        5. [all_noise](#all_noisebike_vector-body_vector-step_size-n)
+        6. [analyze_folder](#analyze_folderfolder_path-users_dictionary)
+
+
 ## Project Goals
 1. Identify key factors for the ergonomics of a particular bike fit and their optimal ranges.
 2. Provide tools to easily quantify and analyze the ergonomic performance of a given bike and body system and their intended use.
@@ -41,7 +56,7 @@ users_dictionary["john"] = john_dictionary
 
 ### Most Useful Function Examples
 **all_angles and prob_dists**
-```
+```python
 LL = 19
 UL = 15.5
 TL = 21
@@ -61,7 +76,7 @@ print(prob_dists(bike_4, body_4, 150))
 ```
 
 **all_noise**
-```
+```python
 body_4 = np.array([[LL, UL, TL, AL, FL, AA]]).T
 bike_4 = np.array([[-9., 27, 16.5, 25.5, 7.]]).T
 
@@ -151,7 +166,7 @@ all_noise(bike_4, body_4, 2, 2)
 ```
 
 **analyze_folder**
-```
+```python
 our_users = {}
 noah_dict = {"height": 71, "torso": 21., "upleg": 15.5, "lowleg": 19., "arm": 24.}
 faez_dict = {"height": 70, "torso": 28.3, "upleg": 15.5, "lowleg": 19., "arm": 21.25}
@@ -173,7 +188,7 @@ noah-dpalmclosed       18.8779       19.7853        21.7988     22.164   -2.1221
 noah-tpalmclosed       18.5759       18.8976        21.64       22.0269  -2.42412   3.3976     2.64     -1.97308
 ```
 
-### Functions
+## Functions
 ### knee_extension_angle(bike_vector, body_vector, CA)
 **Description:**
 Calculates knee extension angle for a given bike and body system and at a specific crank angle (CA)
