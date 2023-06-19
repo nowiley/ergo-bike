@@ -39,6 +39,28 @@ john_dictionary = {"height": 70, "torso": 28.3, "upleg": 15.5, "lowleg": 19., "a
 users_dictionary["john"] = john_dictionary
 ```
 
+### Most Useful Function Examples
+**all_angles and prob_dists**
+```
+LL = 19
+UL = 15.5
+TL = 21
+AL = 24
+FL = 5.5
+AA = deg_to_r(107)
+body_4 = np.array([[LL, UL, TL, AL, FL, AA]]).T
+bike_4 = np.array([[-9., 27, 16.5, 25.25, 7]]).T
+
+print(all_angles(bike_4, body_4, 150))
+>>> ### (knee extension angle, back angle, armpit to wrist angle)
+>>>[45.40954825869782, 54.825079651532384, 70.49433849070087]
+
+print(prob_dists(bike_4, body_4, 150))
+>>>### (knee extension angle, back angle, armpit to wrist angle) probabilities
+>>>(0.056835098630212744, 0.02470619689536746, 4.7871902035923064e-05)
+```
+
+
 ### Functions
 ### knee_extension_angle(bike_vector, body_vector, CA)
 **Description:**
@@ -116,3 +138,4 @@ users_dictionary: Dictionary mapping user name to dictionary with body dimension
 
 **Output:**
 Prints table comparing predicted and actual dimensions.
+
