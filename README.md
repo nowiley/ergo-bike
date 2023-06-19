@@ -42,7 +42,7 @@ Includes tools to calculate and analyze the ergonomics of bike/body systems.
 ## Usage and Documentation
 
 ### What are these dimensions and angles?
-![bike angles diagram](/assets/angles-diagram.jpeg)
+![bike angles diagram](angles-diagram.jpeg)
 
 ### Common Inputs
 bike_vector: NumPy array in form [seat x, seat y, handlebar x, handlebar y, crank length].T
