@@ -1,6 +1,8 @@
 from angles import all_angles
 from tabulate import tabulate
-##### Noise Generation #####
+#######################
+# FUNCTIONS FOR NOISE #
+#######################
 def all_noise(bike, body, step_size, n):
   """
   Input: bike, body, step size, n output points

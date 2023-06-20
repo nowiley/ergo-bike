@@ -1,20 +1,17 @@
 import numpy as np
 from scipy.stats import norm
 from tabulate import tabulate
-#from measureml import analyze
 
 # #####
 # Bike Ergonomic Angle Fit Calculator
 # Input: Vector of bike coordinates (seat and handle bar position) bottom bracket is origin
 # Input: Vecor of body dimensions (shoulder height, leg length, upper leg length, arm length)
 # Input: use case ie (road, mtb, commuter/comfort)
-# Output: Loss = penalize deviations from optimal
+# Output: Probabilities of deviation from optimal angles
 ######
 
-# FUNCTIONS FOR CALCUATING ANGLES
 
 # dict of dictionaries maping use cases to their respective body angles and variations
-# usecase: { name:(mean value, sd) }
 USE_DICT = {
     "road": {
         "opt_knee_angle": (37.5, 5),
@@ -47,8 +44,10 @@ USE_DICT = {
     },
 }
 
-
-def knee_extension_angle(bike_vector, body_vector, CA):
+###################################
+# FUNCTIONS FOR CALCUATING ANGLES #
+###################################
+def knee_extension_angle(bike_vector, body_vector, CA, tor=False):
     """
     Input:
         bike vector, body vector, crank angle
@@ -101,30 +100,24 @@ def knee_extension_angle(bike_vector, body_vector, CA):
     CL_s = sq_bike[4, 0]
 
 
+    #using law of sines and checks for nan/angle validity
     x_1 = np.sqrt(LL_s + FL_s - (2 * LL * FL * np.cos(AA)))
-
 
     LX = CL * np.cos(CA) - SX
     LY = SY - CL * np.sin(CA)
 
-
     x_2 = np.sqrt((LX**2 + LY**2))
-
 
     alpha_1 = np.arccos((x_1**2 - UL_s - x_2**2) / (-2 * UL * x_2))
     if np.isnan(alpha_1):
         return None
 
-
     alpha_2 = np.arctan2(LY, LX) - alpha_1
-
 
     LLY = LY - UL * np.sin(alpha_2)
     LLX = LX - UL * np.cos(alpha_2)
 
-
     alpha_3 = np.arctan2(LLY, LLX) - alpha_2
-
 
     alpha_4 = np.arccos((FL_s - LL_s - x_1**2) / (-2 * LL * x_1))
     if np.isnan(alpha_4):
@@ -137,20 +130,12 @@ def knee_extension_angle(bike_vector, body_vector, CA):
 def back_armpit_angles(bike_vector, body_vector, elbow_angle):
     """
     Input: bike_vector, body_vector, elbow_angle
-    Output: back angle, armpit to wrist angle in radians
+    Output: back angle, armpit to elbow angle, armpit to wrist angle in degrees
 
     np array bike vector:
             [SX, SY, HX, HY, CL]^T
     np array body vector:
             [LL, UL, TL, AL, FL, AA]
-
-    TL = UL
-    UA = LL
-    La = FL
-    AA = ARM Angle
-    CL = 0
-    hx = -sx
-    hy = -sy
     """
     elbow_angle = elbow_angle * (np.pi/180)
 
@@ -194,60 +179,17 @@ def back_armpit_angles(bike_vector, body_vector, elbow_angle):
 
 
 def deg_to_r(deg):
+    """ 
+    Converts degrees to radians
+    """
     return float(deg / 180) * np.pi
 
 
 def rad_to_d(rad):
+    """
+    Converts radians to degrees
+    """
     return float(rad * (180 / np.pi))
-
-
-def prob(mean, sd, value):
-    """
-    Returns probability of value or larger given mean and sd
-    """
-    #handle None type values
-    if value is None:
-      return None
-
-    dist = abs((value - mean))/sd
-    return 1 - norm.cdf(dist, loc=0, scale=1)
-
-
-
-def prob_dists(bike_vector, body_vector, arm_angle, use="road"):
-    """
-    Input: bike, body, arm angle (degrees), [optional] usecase
-    Computes probability of deviation from optimal for each body angle
-    """
-    # arm angle in radians:
-    #arm_angle = float(arm_angle * (np.pi / 180))
-
-
-
-    # back angle, armpit to elbow angle, armpit to wrist angle
-    our_knee_angle, our_back_angle, our_awrist_angle = all_angles(bike_vector, body_vector, arm_angle)
-
-    k_ang_prob = prob(
-        USE_DICT[use]["opt_knee_angle"][0],
-        USE_DICT[use]["opt_knee_angle"][1],
-        our_knee_angle,
-    )
-    b_ang_prob = prob(
-        USE_DICT[use]["opt_back_angle"][0],
-        USE_DICT[use]["opt_back_angle"][1],
-        our_back_angle,
-    )
-    aw_ang_prob = prob(
-        USE_DICT[use]["opt_awrist_angle"][0],
-        USE_DICT[use]["opt_awrist_angle"][1],
-        our_awrist_angle,
-    )
-    # print(f"knee extension: {our_knee_angle}")
-    # print(f"back angle: {our_back_angle}")
-    # print(f"armpit wrist: {our_awrist_angle}")
-
-    return (k_ang_prob, b_ang_prob, aw_ang_prob)
-
 
 def all_angles(bike_vector, body_vector, arm_angle):
   """
@@ -266,9 +208,48 @@ def all_angles(bike_vector, body_vector, arm_angle):
     ke_ang = min(ke_ang)
 
 
-    # back angle, armpit to elbow angle, armpit to wrist angle
-  b_ang, aw_ang = back_armpit_angles(
-      bike_vector, body_vector, arm_angle
-  )
+# back angle, armpit to elbow angle, armpit to wrist angle
+  b_ang, aw_ang = back_armpit_angles(bike_vector, body_vector, arm_angle)
 
   return [rad_to_d(ang) if ang != None else None for ang in [ke_ang, b_ang, aw_ang]]
+
+############################
+# FUNCTIONS FOR PROABILITY #
+############################
+
+def prob(mean, sd, value):
+    """
+    Returns probability of value or larger given mean and sd
+    """
+    #handle None type values
+    if value is None:
+      return None
+
+    dist = abs((value - mean))/sd
+    return 1 - norm.cdf(dist, loc=0, scale=1)
+
+def prob_dists(bike_vector, body_vector, arm_angle, use="road"):
+    """
+    Input: bike, body, arm angle (degrees), [optional] usecase
+    Output: Computes probability of deviation from optimal for each body angle
+    """
+    # back angle, armpit to elbow angle, armpit to wrist angle
+    our_knee_angle, our_back_angle, our_awrist_angle = all_angles(bike_vector, body_vector, arm_angle)
+
+    k_ang_prob = prob(
+        USE_DICT[use]["opt_knee_angle"][0],
+        USE_DICT[use]["opt_knee_angle"][1],
+        our_knee_angle,
+    )
+    b_ang_prob = prob(
+        USE_DICT[use]["opt_back_angle"][0],
+        USE_DICT[use]["opt_back_angle"][1],
+        our_back_angle,
+    )
+    aw_ang_prob = prob(
+        USE_DICT[use]["opt_awrist_angle"][0],
+        USE_DICT[use]["opt_awrist_angle"][1],
+        our_awrist_angle,
+    )
+
+    return (k_ang_prob, b_ang_prob, aw_ang_prob)
