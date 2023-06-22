@@ -1,3 +1,8 @@
 # Pictures #
 *.jpg
 *.jpeg
+*.DS_Store
+*.png
+*.PNG
+*.gif
+*.GIF
