@@ -15,6 +15,8 @@ Includes tools to calculate and analyze the ergonomics of bike/body systems.
         4. [prob_dists](#prob_distsbike_vector-body_vector-arm_angle-use="road")
         5. [all_noise](#all_noisebike_vector-body_vector-step_size-n)
         6. [analyze_folder](#analyze_folderfolder_path-users_dictionary)
+        7. [print_analyze_table](#print_analyze_tableout)
+        8. [print_analyze_images](#print_analyze_imagesout)
 
 
 ## Project Goals
@@ -194,6 +196,18 @@ noah-tpalmclosed       18.5759       18.8976        21.64       22.0269  -2.4241
 ```
 
 ## Functions
+### bike_offset(bike_vector, thickness, setback)
+**Description:**
+Calculates the bike vector for a bike with a given seat thickness and setback.
+
+**Input:**
+* bike_vector
+* thickness: Seat thickness
+* setback: Seat setback distance
+
+**Output:**
+New bike vector with seat x and seat y adjusted for thickness and setback. Does not mutate input vector.
+
 ### knee_extension_angle(bike_vector, body_vector, CA)
 **Description:**
 Calculates knee extension angle for a given bike and body system and at a specific crank angle (CA)
@@ -263,6 +277,7 @@ Prints noise table for each dimension of bike and body with 2n-1 rows in each ta
 **Description:**
 * Analyzes all images in a folder and compares the predicted dimensions of the body to the actual dimensions of the body.
 * Produces a table comparing the predicted and actual dimensions.
+* Also produces a list of tuples of predicted dimension, actual dimension, and the pose overlayed image. 
 
 **Input:**
 folder_path: Path to folder containing images
@@ -270,4 +285,25 @@ users_dictionary: Dictionary mapping user name to dictionary with body dimension
 
 **Output:**
 Prints table comparing predicted and actual dimensions.
+Returns list of tuples of predicted dimension, actual dimension, and the pose overlayed image.
+
+### print_analyze_table(out)
+**Description:**
+* Prints table comparing the predicted and actual dimensions given the output_list from analyze_folder.
+
+**Input:**
+output_list: List of tuples of predicted dimension, actual dimension, and the pose overlayed image from analyze_folder.
+
+**Output:**
+Prints table comparing predicted and actual dimensions.
+
+### print_analyze_images(out)
+**Description:**
+* Prints images with pose overlayed given the output list from analyze_folder.
+
+**Input:**
+output_list: List of tuples of predicted dimension, actual dimension, and the pose overlayed image from analyze_folder.
+
+**Output:**
+Prints images with pose overlayed.
 
