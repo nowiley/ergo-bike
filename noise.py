@@ -27,22 +27,31 @@ def all_noise(bike, body, step_size, n):
         ke_dif = "NaN"
         new_ke = "NaN"
       else:
-        ke_dif = ke-o_ke
         new_ke = ke
+        if o_ke is None:
+          ke_dif = "NaN"
+        else:
+          ke_dif = ke-o_ke
 
       if back is None:
         ba_dif = "NaN"
         new_back = "NaN"
       else:
-        ba_dif = back-o_ba
         new_back = back
+        if o_ba is None:
+          ba_dif = "NaN"
+        else:
+          ba_dif = back-o_ba
 
       if awrist is None:
         aw_dif = "NaN"
         new_awrist = "NaN"
       else:
-        aw_dif = awrist-o_aw
         new_awrist = awrist
+        if o_aw is None:
+          aw_dif = "NaN"
+        else:
+          aw_dif = awrist-o_aw
 
       return (dim, noise_amt, ke_dif, ba_dif, aw_dif, new_ke, new_back, new_awrist)
 
@@ -116,9 +125,3 @@ def all_noise(bike, body, step_size, n):
   for key, name in body_dims.items():
     print(f"\n ***** {name} Dimension *****")
     test_noise("body", key)
-
-
-
-
-
-

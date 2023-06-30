@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.stats import norm
 from tabulate import tabulate
-
+from usecases import USE_DICT
 # #####
 # Bike Ergonomic Angle Fit Calculator
 # Input: Vector of bike coordinates (seat and handle bar position) bottom bracket is origin
@@ -10,39 +10,6 @@ from tabulate import tabulate
 # Output: Probabilities of deviation from optimal angles
 ######
 
-
-# dict of dictionaries maping use cases to their respective body angles and variations
-USE_DICT = {
-    "road": {
-        "opt_knee_angle": (37.5, 5),
-        "opt_back_angle": (45, 5),
-        "opt_awrist_angle": (90, 5),
-        "opt_elbow_angle": (160, 10),
-        "opt_ankle_angle": (100.0, 5.0),
-        "opt_hip_angle_closed": (60, 5),
-    },
-    "mtb": {
-        "opt_knee_angle": (37.5, 2.5),
-        "opt_back_angle": (45, 5),
-        "opt_elbow_angle": (160, 10),
-        "opt_ankle_angle": (100.0, 5.0),
-        "opt_hip_angle_closed": (60, 5),
-    },
-    "tt": {
-        "opt_knee_angle": (37.5, 2.5),
-        "opt_back_angle": (45, 5),
-        "opt_elbow_angle": (160, 10),
-        "opt_ankle_angle": (100.0, 5.0),
-        "opt_hip_angle_closed": (60, 5),
-    },
-    "commute": {
-        "opt_knee_angle": (37.5, 2.5),
-        "opt_back_angle": (45, 5),
-        "opt_elbow_angle": (160, 10),
-        "opt_ankle_angle": (100.0, 5.0),
-        "opt_hip_angle_closed": (60, 5),
-    },
-}
 
 ###################################
 # FUNCTIONS FOR CALCUATING ANGLES #
@@ -226,7 +193,7 @@ def prob(mean, sd, value):
       return None
 
     dist = abs((value - mean))/sd
-    return 1 - norm.cdf(dist, loc=0, scale=1)
+    return (1 - norm.cdf(dist, loc=0, scale=1)) * 2
 
 def prob_dists(bike_vector, body_vector, arm_angle, use="road"):
     """
