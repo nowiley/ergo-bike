@@ -66,6 +66,12 @@ def knee_extension_angle(bike_vector, body_vector, CA, tor=False):
     HY_s = sq_bike[3, 0]
     CL_s = sq_bike[4, 0]
 
+    #Explicit checks for triangle inequality
+    functional_lowleg_foot = np.sqrt(FL_s + LL_s - (2 * FL * LL * np.cos(AA)))
+    straightline_seat = np.sqrt(SX_s + SY_s)
+    if functional_lowleg_foot + UL < straightline_seat:
+        return None
+
 
     #using law of sines and checks for nan/angle validity
     x_1 = np.sqrt(LL_s + FL_s - (2 * LL * FL * np.cos(AA)))
@@ -131,6 +137,11 @@ def back_armpit_angles(bike_vector, body_vector, elbow_angle):
     # Uses new dist and law of cosines to find torso angle
     x_1 = (AL / 2) ** 2 + (AL / 2) ** 2 - 2 * (AL / 2) * (AL / 2) * np.cos(elbow_angle)
     tors_ang = np.arccos((TL**2 + sth_dist**2 - x_1) / (2 * TL * sth_dist))
+
+    #Explicit checks for triangle inequality
+    if TL + x_1 < sth_dist:
+        return (None, None)
+
     #if not possible return None
     if np.isnan(tors_ang):
         return (None, None)
