@@ -4,19 +4,22 @@ import os
 import sys
 import tensorflow as tf
 
+
 ######## ENSURE MODEL IS DOWNLOADED ########
 # Download model from TF Hub and check out inference code from GitHub
 # !wget -q -O movenet_thunder.tflite https://tfhub.dev/google/lite-model/movenet/singlepose/thunder/tflite/float16/4?lite-format=tflite
 # !git clone https://github.com/tensorflow/examples.git
 
-pose_sample_rpi_path = os.path.join(os.getcwd(), 'examples/lite/examples/pose_estimation/raspberry_pi')
+pose_sample_rpi_path = os.path.join(os.getcwd(), 'pythonversion/examples/lite/examples/pose_estimation/raspberry_pi')
 sys.path.append(pose_sample_rpi_path)
 
+print("HEREEEEEEE")
+print(sys.path)
 # Load MoveNet Thunder model
 import utils
 from data import BodyPart
 from ml import Movenet
-movenet = Movenet('movenet_thunder')
+movenet = Movenet('pythonversion/examples/lite/examples/pose_estimation/raspberry_pi/movenet_thunder.tflite')
 
 # Define function to run pose estimation using MoveNet Thunder.
 # You'll apply MoveNet's cropping algorithm and run inference multiple times on

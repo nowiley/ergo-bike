@@ -230,3 +230,29 @@ def prob_dists(bike_vector, body_vector, arm_angle, use="road"):
     )
 
     return (k_ang_prob, b_ang_prob, aw_ang_prob)
+
+def bike_offset(bike_vector, thickness, setback):
+    """
+    Input: Bike vector
+    Output: New bike vector with offset 1 inches reach increase + setback increase, 1 inch height increase + thickness increase
+    """
+    SX = bike_vector[0, 0].copy()
+    SY = bike_vector[1, 0].copy()
+    HX = bike_vector[2, 0].copy()
+    HY = bike_vector[3, 0].copy()
+    CL = bike_vector[4, 0].copy()
+
+    #seat y plus thickness of seat and 1 inch for hip socket to seat
+    SY += thickness + 2.5  
+    #Account for shoe thickness
+    SY -= 1 
+    HY -= 1
+    #seat x decrese by setback and 3 inches for hip socket to seat
+    SX -= (2 + setback)
+
+    
+    new_bike = np.array([[SX], [SY], [HX], [HY], [CL]])
+    print(new_bike)
+    return new_bike
+
+    
