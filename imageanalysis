@@ -175,4 +175,4 @@ def image_angles(height, img, bike, foot_len, ankle_angle, arm_angle):
     print("Predicted Angles: ", angles)
     print("Probabiltiy of Angles", prob_dists(bike, body, arm_angle))
     
-    return (user[0], angles)
+    return (user, angles)
