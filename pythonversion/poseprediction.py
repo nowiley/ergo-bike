@@ -13,8 +13,6 @@ import tensorflow as tf
 pose_sample_rpi_path = os.path.join(os.getcwd(), 'pythonversion/examples/lite/examples/pose_estimation/raspberry_pi')
 sys.path.append(pose_sample_rpi_path)
 
-print("HEREEEEEEE")
-print(sys.path)
 # Load MoveNet Thunder model
 import utils
 from data import BodyPart
