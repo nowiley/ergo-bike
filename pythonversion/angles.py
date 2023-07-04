@@ -13,7 +13,7 @@ from usecases import USE_DICT
 ###################################
 # FUNCTIONS FOR CALCUATING ANGLES #
 ###################################
-def knee_extension_angle(bike_vector, body_vector, CA, tor=False):
+def knee_extension_angle(bike_vector, body_vector, CA, ret_a2=False):
     """
     Input:
         bike vector, body vector, crank angle
@@ -85,6 +85,9 @@ def knee_extension_angle(bike_vector, body_vector, CA, tor=False):
         return None
 
     alpha_2 = np.arctan2(LY, LX) - alpha_1
+    #for use in kneeoverpedal check
+    if ret_a2:
+        return alpha_2
 
     LLY = LY - UL * np.sin(alpha_2)
     LLX = LX - UL * np.cos(alpha_2)
@@ -252,7 +255,7 @@ def bike_offset(bike_vector, thickness, setback):
 
     
     new_bike = np.array([[SX], [SY], [HX], [HY], [CL]])
-    print(new_bike)
+    #print(new_bike)
     return new_bike
 
     

@@ -91,12 +91,14 @@ def analyze_folder(folder, users, display_images=False):
         if len(file_name) != 4:
             continue
 
-        name, identifier, camx, camy = file_name
+        name, identifier, camheight, camdist = file_name
+        camheight = int(camheight)
+        camdist = int(camdist)
         print(f"Processing: {i}/{len(paths)}: {pic}")
 
         if name in users:
             # run model on file
-            result, overlayed = analyze(users[name]["height"], pic)
+            result, overlayed = analyze(users[name]["height"], pic, camheight, camdist)
             pred = decompose_to_dictionary(result)
 
             # calculate difference pred - real value
@@ -161,16 +163,18 @@ def dict_to_body_vector(user_dict, foot_len, ankle_angle):
     return np.array([user_dict["low_leg"], user_dict["up_leg"], user_dict["tor_len"], user_dict["arm_len"], foot_len, deg_to_r(ankle_angle)]).reshape(6,1)
 
 #Image to body dimensions and angles
-def image_angles(height, img, bike, foot_len, ankle_angle, arm_angle):
+def image_angles(height, img, bike, foot_len, camheight, camdist, ankle_angle = 105, arm_angle = 150):
     """ 
     Input: height, img, bike vector, foot length, ankle angle
     Output: body dimensions in user dict form, angles
     """
-    user = decompose_to_dictionary(analyze(height, img)[0])
+    print("*************************")
+    print("Analyzing Image: ", img)
+    user = decompose_to_dictionary(analyze(height, img, camheight, camdist)[0])
     body = dict_to_body_vector(user, foot_len, ankle_angle)
     angles = all_angles(bike, body, arm_angle)
-    print("Predicted Dims: ", user)
-    print("Predicted Angles: ", angles)
-    print("Probabiltiy of Angles", prob_dists(bike, body, arm_angle))
+    print("\n Predicted Dims: ", user)
+    print("\n Predicted Angles: ", angles)
+    print("\n Probabiltiy of Angles", prob_dists(bike, body, arm_angle))
     
     return (user, angles)
