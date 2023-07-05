@@ -5,6 +5,7 @@ import numpy as np
 from tabulate import tabulate
 from angles import all_angles, deg_to_r, prob_dists
 from poseprediction import decompose_to_dictionary, analyze
+from kneeoverpedal import kops
 
 
 # To print table from output of analyze_folder
@@ -163,18 +164,19 @@ def dict_to_body_vector(user_dict, foot_len, ankle_angle):
     return np.array([user_dict["low_leg"], user_dict["up_leg"], user_dict["tor_len"], user_dict["arm_len"], foot_len, deg_to_r(ankle_angle)]).reshape(6,1)
 
 #Image to body dimensions and angles
-def image_angles(height, img, bike, foot_len, camheight, camdist, ankle_angle = 105, arm_angle = 150):
+def image_angles(height, img, bike, foot_len, camheight, camdist, ankle_angle = 105, arm_angle = 150, inference_count=10):
     """ 
     Input: height, img, bike vector, foot length, ankle angle
     Output: body dimensions in user dict form, angles
     """
-    print("*************************")
-    print("Analyzing Image: ", img)
-    user = decompose_to_dictionary(analyze(height, img, camheight, camdist)[0])
+    print(f"Analyzing With Inference Count = {inference_count}: {img}")
+    user = decompose_to_dictionary(analyze(height, img, camheight, camdist, inference_count=inference_count)[0])
     body = dict_to_body_vector(user, foot_len, ankle_angle)
     angles = all_angles(bike, body, arm_angle)
-    print("\n Predicted Dims: ", user)
-    print("\n Predicted Angles: ", angles)
-    print("\n Probabiltiy of Angles", prob_dists(bike, body, arm_angle))
-    
-    return (user, angles)
+    kover = kops(bike, body)
+    # print("\n Predicted Dims: ", user)
+    # print("\n Predicted Angles: ", angles)
+    # print("\n Probabiltiy of Angles", prob_dists(bike, body, arm_angle))
+    # print("\n Predicted KOPS: ", kover)
+
+    return (user, angles, kover)

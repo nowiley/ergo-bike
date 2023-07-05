@@ -245,15 +245,14 @@ def bike_offset(bike_vector, thickness, setback):
     HY = bike_vector[3, 0].copy()
     CL = bike_vector[4, 0].copy()
 
-    #seat y plus thickness of seat and 1 inch for hip socket to seat
+    #seat y plus thickness of seat, hip socket to top of seat
     SY += thickness + 2.5  
     #Account for shoe thickness
     SY -= 1 
     HY -= 1
-    #seat x decrese by setback and 3 inches for hip socket to seat
+    #seat x decrese by setback and 2 inches for hip socket to seat
     SX -= (2 + setback)
 
-    
     new_bike = np.array([[SX], [SY], [HX], [HY], [CL]])
     #print(new_bike)
     return new_bike

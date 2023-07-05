@@ -9,14 +9,16 @@ Includes tools to calculate and analyze the ergonomics of bike/body systems.
     2. [Common Inputs](#common-inputs)
     3. [Most Useful Function Examples](#most-useful-function-examples)
     4. [Functions](#functions)
-        1. [knee_extension_angle](#knee_extension_anglebike_vector-body_vector-ca)
-        2. [back_armpit_angles](#back_armpit_anglesbike_vector-body_vector-arm_angle)
-        3. [all_angles](#all_anglesbike_vector-body_vector-arm_angle)
-        4. [prob_dists](#prob_distsbike_vector-body_vector-arm_angle-use="road")
-        5. [all_noise](#all_noisebike_vector-body_vector-step_size-n)
-        6. [analyze_folder](#analyze_folderfolder_path-users_dictionary)
-        7. [print_analyze_table](#print_analyze_tableout)
-        8. [print_analyze_images](#print_analyze_imagesout)
+        1. [image_angles](#image_anglesimage_path-bike_vector-body_vector-foot_length-inference_count--10-ankle_angle--105-arm_angle--150)
+        2. [bike_offset](#bike_offsetbike_vector-thickness-setback)
+        2. [knee_extension_angle](#knee_extension_anglebike_vector-body_vector-ca)
+        3. [back_armpit_angles](#back_armpit_anglesbike_vector-body_vector-arm_angle)
+        4. [all_angles](#all_anglesbike_vector-body_vector-arm_angle)
+        5. [prob_dists](#prob_distsbike_vector-body_vector-arm_angle-use="road")
+        6. [all_noise](#all_noisebike_vector-body_vector-step_size-n)
+        7. [analyze_folder](#analyze_folderfolder_path-users_dictionary)
+        8. [print_analyze_table](#print_analyze_tableout)
+        9. [print_analyze_images](#print_analyze_imagesout)
 
 
 ## Project Goals
@@ -41,27 +43,38 @@ Includes tools to calculate and analyze the ergonomics of bike/body systems.
 ### 3. Integrate these tools with pose prediction software to speed up calculation, and provide tools to analyze the sensitivity and accuracy of the entire system.
 1. Created a function to calculate the dimensions of certain body parts given the height of the person which can be used to make a body vector.
 2. Created a function to compare the predicted dimensions of the body to the actual dimensions of the body. This function can analyze all images in a certain file path following a naming format and can output a table to compare the predicted and actual dimensions.
+3. **ONE** function to to calculate predicted dimensions and angles given an image and a bike vector.
 
 ## Usage and Documentation
 
 ### What are these dimensions and angles?
 ![bike angles diagram](angles-diagram.jpeg)
 
-### Common Inputs
-bike_vector: NumPy array in form [seat x, seat y, handlebar x, handlebar y, crank length].T
-
-body_vector: NumPy array in form [lower leg, upper leg, torso length, arm length, foot length, ankle angle].T
-
-arm_angle: Angle between the upper arm and lower arm at the elbow.
-
-users_dictionary: Dictionary mapping user name to dictionary with body dimensions mapped to their name. See example below.
-```
-users_dictionary = {}
-john_dictionary = {"height": 70, "torso": 28.3, "upleg": 15.5, "lowleg": 19., "arm": 21.25}
-users_dictionary["john"] = john_dictionary
-```
-
 ### Most Useful Function Examples
+
+**image_angles**
+```python
+bike_4 = np.array([[-9., 27, 16.5, 25.5, 7.]]).T
+image_path = ".../mypose.jpg"
+print(image_angles(bike_4, image_path))
+>>> #Analyzing With Inference Count = 10: /Users/noahwiley/Documents/Bike UROP/MeasureML-main/ergo-bike/pictures/Bright/noah-dpalmclosed-62-111.jpg
+(
+  {
+    'height': 71, 
+  'sh_height': 56.67393743138017, 
+  'hip_to_ankle': 33.72468993690645, 
+  'hip_to_knee': 16.09842413704969, 
+  'shoulder_to_wrist': 21.318759732980737, 
+  'arm_len': 24.158759732980737, 
+  'tor_len': 20.109247494473717, 
+  'low_leg': 20.46626579985676, 
+  'up_leg': 16.09842413704969
+  }, 
+  [51.50336286206853, 49.01949672595183, 78.81088800155787], 
+  -2.7450928099733733
+)
+  ```
+
 **all_angles and prob_dists**
 ```python
 LL = 19
@@ -107,21 +120,7 @@ all_noise(bike_4, body_4, 2, 2)
          27            0    0          0             0          45.4095  55.4136   70.4436
          29            2  nan         -4.80618       0.623295  nan       50.6075   71.0669
 
- ***** Handlebar X Dimension *****
-  Dim Value    Noise Amt    ke dif    back dif    awrist diff       ke     back    awrist
------------  -----------  --------  ----------  -------------  -------  -------  --------
-       14.5           -2         0     3.34192       -6.25349  45.4095  58.7556   64.1901
-       16.5            0         0     0              0        45.4095  55.4136   70.4436
-       18.5            2         0    -3.45231        6.50258  45.4095  51.9613   76.9462
-
- ***** Handlebar Y Dimension *****
-  Dim Value    Noise Amt    ke dif    back dif    awrist diff       ke     back    awrist
------------  -----------  --------  ----------  -------------  -------  -------  --------
-       23.5           -2         0    -4.80618       0.623295  45.4095  50.6075   71.0669
-       25.5            0         0     0             0         45.4095  55.4136   70.4436
-       27.5            2         0     4.56148      -0.124946  45.4095  59.9751   70.3187
-
-
+#More data
 
 #*#*#*#*#*#*#*#*#*#*#*#*#*#*#*
 #*#*#*#*# BODY NOISE #*#*#*#*#
@@ -134,42 +133,7 @@ all_noise(bike_4, body_4, 2, 2)
          19            0    0                0              0   45.4095  55.4136   70.4436
          21            2   16.0404           0              0   61.45    55.4136   70.4436
 
- ***** Upper Leg Dimension *****
-  Dim Value    Noise Amt    ke dif    back dif    awrist diff        ke     back    awrist
------------  -----------  --------  ----------  -------------  --------  -------  --------
-       13.5           -2  nan                0              0  nan       55.4136   70.4436
-       15.5            0    0                0              0   45.4095  55.4136   70.4436
-       17.5            2   16.8556           0              0   62.2652  55.4136   70.4436
-
- ***** Torso Length Dimension *****
-  Dim Value    Noise Amt    ke dif    back dif    awrist diff       ke     back    awrist
------------  -----------  --------  ----------  -------------  -------  -------  --------
-         19           -2         0     1.84858        3.34655  45.4095  57.2622   73.7902
-         21            0         0     0              0        45.4095  55.4136   70.4436
-         23            2         0    -2.01989       -3.28299  45.4095  53.3937   67.1606
-
- ***** Arm Length Dimension *****
-  Dim Value    Noise Amt    ke dif    back dif    awrist diff       ke     back    awrist
------------  -----------  --------  ----------  -------------  -------  -------  --------
-         22           -2         0    -5.53067        3.95219  45.4095  49.883    74.3958
-         24            0         0     0              0        45.4095  55.4136   70.4436
-         26            2         0     5.6661        -3.86187  45.4095  61.0797   66.5817
-
- ***** Foot Length Dimension *****
-  Dim Value    Noise Amt    ke dif    back dif    awrist diff       ke     back    awrist
------------  -----------  --------  ----------  -------------  -------  -------  --------
-        3.5           -2  -19.8783           0              0  25.5313  55.4136   70.4436
-        5.5            0    0                0              0  45.4095  55.4136   70.4436
-        7.5            2   15.1694           0              0  60.5789  55.4136   70.4436
-
- ***** Ankle Angle Dimension *****
-  Dim Value    Noise Amt    ke dif    back dif    awrist diff        ke     back    awrist
------------  -----------  --------  ----------  -------------  --------  -------  --------
-  -0.132498           -2  nan                0              0  nan       55.4136   70.4436
-   1.8675              0    0                0              0   45.4095  55.4136   70.4436
-   3.8675              2   13.2436           0              0   58.6531  55.4136   70.4436
-<ipython-input-1-340ef2c321d1>:114: RuntimeWarning: invalid value encountered in arccos
-  alpha_1 = np.arccos((x_1**2 - UL_s - x_2**2) / (-2 * UL * x_2))
+#More data
 ```
 
 **analyze_folder**
@@ -183,19 +147,53 @@ our_users["faez"] = faez_dict
 folder = "/content/drive/MyDrive/Bike Pose Detection Folder/Bright "
 analyze_folder(folder, our_users)
 >>> ### Table comparing predicted and actual dimensions
->>> file                pred torso    pred upleg    pred lowleg    pred arm    dtorso    dupleg    dlowleg      darm
+>>>
+file                pred torso    pred upleg    pred lowleg    pred arm    dtorso    dupleg    dlowleg      darm
 ----------------  ------------  ------------  -------------  ----------  --------  --------  ---------  --------
 noah-spalmback         18.7244       19.1177        21.9539     22.2936  -2.27555   3.6177     2.95388  -1.70643
 noah-dpalmback         18.8007       19.5824        21.9863     22.3149  -2.19927   4.08238    2.98634  -1.68509
 noah-tpalmopen         19.0336       19.4478        21.7123     22.0601  -1.96645   3.9478     2.71234  -1.93986
-noah-spalmopen         18.4177       19.4814        22.1035     22.4382  -2.58227   3.98137    3.1035   -1.56177
-noah-tpalmback         19.0313       18.9803        21.9869     22.183   -1.96868   3.48031    2.98687  -1.81695
-noah-spalmclosed       18.7351       19.0978        21.7393     22.1515  -2.2649    3.59779    2.73926  -1.84854
-noah-dpalmclosed       18.8779       19.7853        21.7988     22.164   -2.12211   4.28531    2.79883  -1.83597
-noah-tpalmclosed       18.5759       18.8976        21.64       22.0269  -2.42412   3.3976     2.64     -1.97308
+#More data
+```
+
+### Common Inputs
+bike_vector: NumPy array in form [seat x, seat y, handlebar x, handlebar y, crank length].T
+
+body_vector: NumPy array in form [lower leg, upper leg, torso length, arm length, foot length, ankle angle].T
+
+arm_angle: Angle between the upper arm and lower arm at the elbow.
+
+users_dictionary: Dictionary mapping user name to dictionary with body dimensions mapped to their name. See example below.
+```python
+users_dictionary = {}
+john_dictionary = {"height": 70, "torso": 28.3, "upleg": 15.5, "lowleg": 19., "arm": 21.25}
+users_dictionary["john"] = john_dictionary
 ```
 
 ## Functions
+
+---
+
+### image_angles(image_path, bike_vector, body_vector, foot_length, (inference_count = 10), (ankle_angle = 105), (arm_angle = 150))
+
+**Description:**
+* Calculates the predicted user dimensions, angles, and knee over pedal spindle (KOPS) for a given image and bike vector.
+
+**Input:**
+- image_path: Path to image
+- bike_vector
+- body_vector
+- foot_length 
+- (optional) inference_count: Number of times to run inference on image (higher values may take longer but may be more accurate)
+- (optional) ankle_angle in **degrees**
+- (optional) arm_angle in **degrees**
+
+**Output:**
+- Tuple of (user, angles, kops)
+  - user = predicition dictionary
+  - angles = tuple of knee extension angle, back angle, and armpit to wrist angle in **degrees** or None if inputs violate triangle inequality for certain angle
+  - kops = horizontal knee position relative to center of pedal at 3 O'clock position
+
 ---
 ### bike_offset(bike_vector, thickness, setback)
 **Description:**
@@ -211,24 +209,6 @@ Calculates the bike vector for a bike with a given seat thickness and setback.
 
 ---
 
-### image_angles(image_path, bike_vector, body_vector, foot_length, ankle_angle, arm_angle)
-
-**Description:**
-* Calculates the knee extension angle, back angle, and armpit to wrist angle of a given image.
-
-**Input:**
-- image_path: Path to image
-- bike_vector
-- body_vector
-- foot_length 
-- ankle_angle in **degrees**
-- arm_angle in **degrees**
-
-**Output:**
-Tuple of (user, angles) where user = predicition dictionary and angles = tuple of knee extension angle, back angle, and armpit to wrist angle in **degrees** or None if inputs violate triangle inequality for certain angle.
-
----
- 
 ### knee_extension_angle(bike_vector, body_vector, CA)
 **Description:**
 Calculates knee extension angle for a given bike and body system and at a specific crank angle (CA)
@@ -269,6 +249,18 @@ Tuple of back angle in **radians** and armpit to wrist angle in **radians** or N
 
 **Output:**
 Tuple of minimum knee extension angle in **degrees**, back angle in **degrees**, and armpit to wrist angle in **degrees** or None if inputs violate triangle inequality for certain angle.
+
+---
+### kops(bike_vector, body_vector)
+**Description:**
+Calculates the horizontal knee position relative to center of pedal at 3 O'clock position for a given bike and body system.
+
+**Input:**
+- bike_vector
+- body_vector
+
+**Output:**
+Horizontal knee position relative to center of pedal at 3 O'clock position.
 
 ---
 

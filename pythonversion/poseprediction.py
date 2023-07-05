@@ -28,7 +28,7 @@ movenet = Movenet(
 # Define function to run pose estimation using MoveNet Thunder.
 # You'll apply MoveNet's cropping algorithm and run inference multiple times on
 # the input image to improve pose estimation accuracy.
-def detect(input_tensor, inference_count=50):
+def detect(input_tensor, inference_count=10):
     """Runs detection on an input image.
 
     Args:
@@ -57,13 +57,13 @@ def detect(input_tensor, inference_count=50):
 ##################
 ### Calculation ##
 ##################
-def calculation(heights, imgroute, camheight, camdist, output_overlayed=True):
+def calculation(heights, imgroute, camheight, camdist, inference_count = 10, output_overlayed=True):
     z = imgroute
     image = tf.io.read_file(z)
     height = heights
     image = tf.io.decode_jpeg(image)
     pheight = image.get_shape()[0]
-    person = detect(image)
+    person = detect(image, inference_count=inference_count)
     keys = []
 
     # Y-axis Distortion Correction
@@ -190,10 +190,10 @@ def calculation(heights, imgroute, camheight, camdist, output_overlayed=True):
 
 
 ## height of user and file path for image
-def analyze(height, imgroute, camheight, camdist):
+def analyze(height, imgroute, camheight, camdist, inference_count=10):
     calc, overlayed = calculation(
-        height, imgroute, camheight, camdist, output_overlayed=True
-    )
+        height, imgroute, camheight, camdist, output_overlayed=True, 
+    inference_count=inference_count)
     calc = [height] + calc
     return (calc, overlayed)
     # Bypassing lin regression model
