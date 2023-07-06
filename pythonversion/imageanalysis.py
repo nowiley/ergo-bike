@@ -35,7 +35,7 @@ def print_analyze_table(out):
     )
 
 
-def display_images(input_list):
+def display_images(input_list, save_path=None):
     """Displays images in input list: [image, title, differences]"""
     rows = int(len(input_list) / 2) + 1
     columns = 2
@@ -50,11 +50,15 @@ def display_images(input_list):
         plt.title(tup[1])
         plt.text(0, 60, tup[2], fontsize="x-large", color="grey")
 
+    if save_path:
+        plt.savefig(save_path)
+        plt.clf() #clear fig so things don't overlap
+        return
     plt.show()
 
 
 # To display images from output of analyze_folder
-def display_analyze_images(out):
+def display_analyze_images(out, save_path=None):
     """
     Input: Output of analyze_folder
     Output: Displays images of results
@@ -65,10 +69,10 @@ def display_analyze_images(out):
         x_label = line[0]
         title = f"dtorso: {round(line[5], 2)}, dupleg: {round(line[6], 2)}, dlowleg: {round(line[7], 2)}, darm: {round(line[8], 2)}, avgdif: {round(line[9], 2)}"
         new_out.append((img, title, x_label))
-    display_images(new_out)
+    display_images(new_out, save_path=save_path)
 
 
-def analyze_folder(folder, users, display_images=False):
+def analyze_folder(folder, users, display_images=False, save_path=None):
     """
     Input:
         1. Folder of pics
@@ -131,7 +135,7 @@ def analyze_folder(folder, users, display_images=False):
 
     # display images if desired
     if display_images:
-        display_analyze_images(out)
+        display_analyze_images(out, save_path=save_path)
 
     return out
 
