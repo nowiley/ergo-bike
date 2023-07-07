@@ -10,3 +10,4 @@ loss_functionsv1q.py
 test.py
 *.pyc
 all_res.pkl
+croptest.pkl

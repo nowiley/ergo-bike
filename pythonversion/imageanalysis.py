@@ -168,13 +168,14 @@ def dict_to_body_vector(user_dict, foot_len, ankle_angle):
     return np.array([user_dict["low_leg"], user_dict["up_leg"], user_dict["tor_len"], user_dict["arm_len"], foot_len, deg_to_r(ankle_angle)]).reshape(6,1)
 
 #Image to body dimensions and angles
-def image_angles(height, img, bike, foot_len, camheight, camdist, ankle_angle = 105, arm_angle = 150, inference_count=10):
+def image_angles(height, img, bike, foot_len, camheight, camdist, ankle_angle = 105, arm_angle = 150, inference_count=10, output_overlayed = False):
     """ 
     Input: height, img, bike vector, foot length, ankle angle
     Output: body dimensions in user dict form, angles
     """
     print(f"Analyzing With Inference Count = {inference_count}: {img}")
-    user = decompose_to_dictionary(analyze(height, img, camheight, camdist, inference_count=inference_count)[0])
+    pred, overlayed = analyze(height, img, camheight, camdist, inference_count=inference_count)
+    user = decompose_to_dictionary(pred)
     body = dict_to_body_vector(user, foot_len, ankle_angle)
     angles = all_angles(bike, body, arm_angle)
     kover = kops(bike, body)
@@ -183,4 +184,8 @@ def image_angles(height, img, bike, foot_len, camheight, camdist, ankle_angle = 
     # print("\n Probabiltiy of Angles", prob_dists(bike, body, arm_angle))
     # print("\n Predicted KOPS: ", kover)
 
+    if output_overlayed:
+        plt.imshow(overlayed)
+        plt.show()
+        return (user, angles, kover, overlayed)
     return (user, angles, kover)

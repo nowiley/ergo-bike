@@ -49,7 +49,7 @@ def detect(input_tensor, inference_count=10):
     # Repeatedly using previous detection result to identify the region of
     # interest and only croping that region to improve detection accuracy
     for _ in range(inference_count - 1):
-        person = movenet.detect(input_tensor.numpy(), reset_crop_region=False)
+      person = movenet.detect(input_tensor.numpy(), reset_crop_region=False)
 
     return person
 
