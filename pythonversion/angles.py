@@ -3,10 +3,8 @@ from scipy.stats import norm
 from usecases import USE_DICT
 # #####
 # Bike Ergonomic Angle Fit Calculator
-# Input: Vector of bike coordinates (seat and handle bar position) bottom bracket is origin
-# Input: Vecor of body dimensions (shoulder height, leg length, upper leg length, arm length)
-# Input: use case ie (road, mtb, commuter/comfort)
-# Output: Probabilities of deviation from optimal angles
+# Calculates body angles given bike and body measurements
+# Calculates ergonomic score/probability of fit given use case
 ######
 
 
@@ -16,19 +14,21 @@ from usecases import USE_DICT
 def knee_extension_angle(bike_vector, body_vector, CA, ret_a2=False):
     """
     Input:
-        bike vector, body vector, crank angle
+        bike vector, body vector, crank angle, OPTIONAL return a2
         np array bike vector:
             [SX, SY, HX, HY, CL]^T
             (seat_x, seat_y, hbar_x, hbar_y, crank len)
+            Origin is bottom bracket
         np array body vector:
             [LL, UL, TL, AL, FL, AA]
-            (lowleg, upleg, torso len, arm len, foot len, ankl angle)
+            (lowleg, upleg, torso len, arm len, foot len, ankle angle)
         CA = crank angle:
             crank angle fom horizontal in radians
-        Origin is bottom bracket
+        Optional return a2:
+            returns a2 for use in kneeoverpedal check
 
     Output:
-        Knee extension angle
+        Knee extension angle in radians
         OR
         None if not valid coords (i.e. NaA appeared)
 
@@ -72,7 +72,7 @@ def knee_extension_angle(bike_vector, body_vector, CA, ret_a2=False):
         return None
 
 
-    #using law of sines and checks for nan/angle validity
+    #Using law of sines and checks for nan/angle validity
     x_1 = np.sqrt(LL_s + FL_s - (2 * LL * FL * np.cos(AA)))
 
     LX = CL * np.cos(CA) - SX
@@ -98,13 +98,12 @@ def knee_extension_angle(bike_vector, body_vector, CA, ret_a2=False):
     if np.isnan(alpha_4):
         return None
 
-
     return alpha_3 + alpha_4
 
 
 def back_armpit_angles(bike_vector, body_vector, elbow_angle):
     """
-    Input: bike_vector, body_vector, elbow_angle
+    Input: bike_vector, body_vector, elbow_angle in degrees
     Output: back angle, armpit to elbow angle, armpit to wrist angle in degrees
 
     np array bike vector:
@@ -135,7 +134,6 @@ def back_armpit_angles(bike_vector, body_vector, elbow_angle):
     # Calculating angle offset (horizontal to sth_dist) for torso angle
     sth_ang = np.arctan2((HY - SY), (HX - SX))
 
-
     # Uses new dist and law of cosines to find torso angle
     x_1 = (AL / 2) ** 2 + (AL / 2) ** 2 - 2 * (AL / 2) * (AL / 2) * np.cos(elbow_angle)
     tors_ang = np.arccos((TL**2 + sth_dist**2 - x_1) / (2 * TL * sth_dist))
@@ -153,6 +151,7 @@ def back_armpit_angles(bike_vector, body_vector, elbow_angle):
 
     #### ARMPIT TO WRIST ANGLE ####
     armpit_to_wrist = np.arccos((TL**2 + x_1 - sth_dist**2)/ (2 * TL * (x_1**0.5)))
+    #no check for triangle inequality because checked above
 
     # return angles in radians
     return (back_angle, armpit_to_wrist)
@@ -173,11 +172,11 @@ def rad_to_d(rad):
 
 def all_angles(bike_vector, body_vector, arm_angle):
   """
-  Input: bike, body, arm_angle in degrees
+  Input: bike, body, arm angle (at elbow) in degrees
   Output: tuple (min_ke angle, back angle, awrist angle) in degrees
   """
-
-  # min knee extension angle over sweep 0-2pi
+  #Min knee extension angle over sweep 0-2pi
+  #if None appears in sweep, return None
   ke_ang = [
             item for item in (knee_extension_angle(bike_vector, body_vector, angle*0.2)
             for angle in range(0, 32)) if item != None
@@ -188,7 +187,7 @@ def all_angles(bike_vector, body_vector, arm_angle):
     ke_ang = min(ke_ang)
 
 
-# back angle, armpit to elbow angle, armpit to wrist angle
+# back angle, armpit to wrist angle
   b_ang, aw_ang = back_armpit_angles(bike_vector, body_vector, arm_angle)
 
   return [rad_to_d(ang) if ang != None else None for ang in [ke_ang, b_ang, aw_ang]]
@@ -196,22 +195,25 @@ def all_angles(bike_vector, body_vector, arm_angle):
 ############################
 # FUNCTIONS FOR PROABILITY #
 ############################
+# Calculates probability of a certain angle given reccomended angle and standard deviation
+# in usecases.py
 
 def prob(mean, sd, value):
     """
     Returns probability of value or larger given mean and sd
     """
-    #handle None type values
+    # Handle None type values
     if value is None:
       return None
 
     dist = abs((value - mean))/sd
+    #Double sided probability
     return (1 - norm.cdf(dist, loc=0, scale=1)) * 2
 
 def prob_dists(bike_vector, body_vector, arm_angle, use="road"):
     """
     Input: bike, body, arm angle (degrees), [optional] usecase
-    Output: Computes probability of deviation from optimal for each body angle
+    Output: Computes probability of deviation from reccomended angle for each body angle
     """
     # back angle, armpit to elbow angle, armpit to wrist angle
     our_knee_angle, our_back_angle, our_awrist_angle = all_angles(bike_vector, body_vector, arm_angle)
@@ -237,8 +239,13 @@ def prob_dists(bike_vector, body_vector, arm_angle, use="road"):
 def bike_offset(bike_vector, thickness, setback):
     """
     Input: Bike vector
-    Output: New bike vector with offset 1 inches reach increase + setback increase, 1 inch height increase + thickness increase
+    Output: NEW bike vector with offsets applied
+            Seat Y + thickness of seat + hip socket to top of seat
+            Seat X - setback - 2 inches for hip socket to seat
+            Seat Y - 1 for shoe thickness
+            Hbar Y - 1 for shoe thickness
     """
+    #Avoid ailiasing
     SX = bike_vector[0, 0].copy()
     SY = bike_vector[1, 0].copy()
     HX = bike_vector[2, 0].copy()
@@ -254,7 +261,6 @@ def bike_offset(bike_vector, thickness, setback):
     SX -= (2 + setback)
 
     new_bike = np.array([[SX], [SY], [HX], [HY], [CL]])
-    #print(new_bike)
     return new_bike
 
     

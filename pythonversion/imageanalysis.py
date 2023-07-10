@@ -1,4 +1,7 @@
-# Analyze all pictures in folder; name format: "[name]-[identifier]-[cam dist]-[cam height].jpg" can end in "".JPG" also
+####################
+# Picture Analysis #
+####################
+#naming format: "[name]-[identifier]-[cam dist]-[cam height].jpg" or .JPG
 import glob
 import matplotlib.pyplot as plt
 import numpy as np
@@ -11,11 +14,12 @@ from kneeoverpedal import kops
 # To print table from output of analyze_folder
 def print_analyze_table(out):
     """
-    Input: Output of analyze_folder
+    Input: Output from analyze_folder
     Output: Prints table of results
     """
-    # new out folder to discard numpy images
+    # Format output to discard numpy images
     new_out = [line[:-1] for line in out]
+    # Prints Table
     print(
         tabulate(
             new_out,
@@ -36,23 +40,34 @@ def print_analyze_table(out):
 
 
 def display_images(input_list, save_path=None):
-    """Displays images in input list: [image, title, differences]"""
-    rows = int(len(input_list) / 2) + 1
+    """
+    Displays images in input list: [ (image, title, differences) ]
+    Optional save_path: path to save image (will not display with matplotlib)
+    """
+    # Setting up plot with 2 columns
+    # Results hard to view with 10+ images: consider saving first then viewing
+    #rows = int(len(input_list) / 2) + 1
+    rows = 4
     columns = 2
     plt.rcParams["figure.figsize"] = [16, 6 * rows]
     plt.rcParams["figure.autolayout"] = True
 
     for i, tup in enumerate(input_list):
-        # adds overlay and title to img plot
+        # select subplot
         plt.subplot(rows, columns, i + 1)
+        #turn off x and y marked axes
         plt.axis("off")
+        # display image
         plt.imshow(tup[0])
+        # add differences as title
         plt.title(tup[1])
+        # add image title overlay
         plt.text(0, 60, tup[2], fontsize="x-large", color="grey")
 
     if save_path:
         plt.savefig(save_path)
         plt.clf() #clear fig so things don't overlap
+        #does not display through matplotlib if save_path is specified
         return
     plt.show()
 
@@ -63,12 +78,14 @@ def display_analyze_images(out, save_path=None):
     Input: Output of analyze_folder
     Output: Displays images of results
     """
+    # Considering using a generator rather than storing all images in memory
     new_out = []
     for line in out:
         img = line[-1]
         x_label = line[0]
         title = f"dtorso: {round(line[5], 2)}, dupleg: {round(line[6], 2)}, dlowleg: {round(line[7], 2)}, darm: {round(line[8], 2)}, avgdif: {round(line[9], 2)}"
         new_out.append((img, title, x_label))
+    # display images
     display_images(new_out, save_path=save_path)
 
 
@@ -78,6 +95,8 @@ def analyze_folder(folder, users, display_images=False, save_path=None):
         1. Folder of pics
               IMPORTANT: name format: "[name]-[identifier]-[cam dist]-[cam height].jpg"
         2. User dimensions dictionary: {"name": {"height": height... "torso", "upleg", "lowleg", "arm"}}
+        3. Optional display_images: True to display images
+        4. Optional save_path: path to save images MUST have display_images = true (will not display images with matplotlib)
     Output:
       Prints table: Picure Name: Predicted Dimensions | Difference From Actual Dimensions
       Returns: List of tuples corresponding to rows of table + POSE IMAGE AS NP ARRAY
@@ -136,7 +155,7 @@ def analyze_folder(folder, users, display_images=False, save_path=None):
     # display images if desired
     if display_images:
         display_analyze_images(out, save_path=save_path)
-
+    
     return out
 
 def sort_analysis(out, header="avgdif"):
