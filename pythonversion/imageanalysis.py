@@ -99,10 +99,10 @@ def analyze_folder(folder, users, display_images=False, save_path=None):
         4. Optional save_path: path to save images MUST have display_images = true (will not display images with matplotlib)
     Output:
       Prints table: Picure Name: Predicted Dimensions | Difference From Actual Dimensions
-      Returns: List of tuples corresponding to rows of table + POSE IMAGE AS NP ARRAY
+      Returns: List of tuples corresponding to rows of table + (POSE OVERLAYED IMAGE AS NP ARRAY)
         (file name, pred torso, pred upleg, pred lowleg, pred arm, dtorso, dupleg, dlowleg, darm, image)
     """
-    # iterator for all pictures (end in .jpg) in folder path
+    # list of all pictures (end in .jpg) in folder path
     paths = glob.glob((folder + "/*.jpg")) + glob.glob((folder + "/*.JPG"))
 
     out = []
@@ -116,10 +116,16 @@ def analyze_folder(folder, users, display_images=False, save_path=None):
             continue
 
         name, identifier, camheight, camdist = file_name
-        camheight = int(camheight)
-        camdist = int(camdist)
+        # catch errors in file name
+        try:
+            camheight = int(camheight)
+            camdist = int(camdist)
+        except ValueError:
+            continue
+        # finally processing image
         print(f"Processing: {i}/{len(paths)}: {pic}")
 
+        # only analyze if user in users
         if name in users:
             # run model on file
             result, overlayed = analyze(users[name]["height"], pic, camheight, camdist)
@@ -155,12 +161,17 @@ def analyze_folder(folder, users, display_images=False, save_path=None):
     # display images if desired
     if display_images:
         display_analyze_images(out, save_path=save_path)
+    elif save_path is not None:
+        print("save_path specified but display_images not True. No images saved.")
     
     return out
 
 def sort_analysis(out, header="avgdif"):
     """
-    Input: Output of analyze_folder
+    Input: Output of analyze_folder, header to sort by
+        header options default = "avgdif": 
+            "file", "pred torso", "pred upleg", "pred lowleg", 
+            "pred arm", "dtorso", "dupleg", "dlowleg", "darm", "avgdif"
     Output: MUTATES input to be sorted by specified header
     """
     header_name = {
@@ -187,10 +198,13 @@ def dict_to_body_vector(user_dict, foot_len, ankle_angle):
     return np.array([user_dict["low_leg"], user_dict["up_leg"], user_dict["tor_len"], user_dict["arm_len"], foot_len, deg_to_r(ankle_angle)]).reshape(6,1)
 
 #Image to body dimensions and angles
-def image_angles(height, img, bike, foot_len, camheight, camdist, ankle_angle = 105, arm_angle = 150, inference_count=10, output_overlayed = False):
+def image_angles(height, img, bike, foot_len, camheight = None, camdist = None, ankle_angle = 105, arm_angle = 150, inference_count=10, output_overlayed = False):
     """ 
-    Input: height, img, bike vector, foot length, ankle angle
-    Output: body dimensions in user dict form, angles
+    Input: height, img, bike vector, foot length
+        Optional: camheight, camdist (if image not named according to format) 
+                    ankle_angle, arm_angle, inference_count, 
+                    output_overlayed - True to return overlayed image
+    Output: Tuple: (body dimensions in user dict form, angles)
     """
     print(f"Analyzing With Inference Count = {inference_count}: {img}")
     pred, overlayed = analyze(height, img, camheight, camdist, inference_count=inference_count)

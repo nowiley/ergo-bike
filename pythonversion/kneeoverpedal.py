@@ -4,7 +4,8 @@ import numpy as np
 def kops(bike, body):
     """
     Input: bike vector, body vector, crank length
-    Output: horizontal offset knee to pedal center at 3 o'clock
+    Output: horizontal offset knee to pedal center at 3 o'clock 
+            returns None if not valid coords (i.e. NaA appeared)
     """
     alpha_2 = knee_extension_angle(bike, body, 0, ret_a2=True)
     if alpha_2 is None:

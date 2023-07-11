@@ -30,7 +30,6 @@ movenet = Movenet(
 # the input image to improve pose estimation accuracy.
 def detect(input_tensor, inference_count=10):
     """Runs detection on an input image.
-
     Args:
       input_tensor: A [height, width, 3] Tensor of type tf.float32.
         Note that height and width can be anything since the image will be
@@ -48,7 +47,8 @@ def detect(input_tensor, inference_count=10):
 
     # Repeatedly using previous detection result to identify the region of
     # interest and only croping that region to improve detection accuracy
-    for _ in range(inference_count - 1):
+    # Will technically run inference_count + 1 times on the same input image.
+    for _ in range(inference_count):
       person = movenet.detect(input_tensor.numpy(), reset_crop_region=False)
 
     return person
