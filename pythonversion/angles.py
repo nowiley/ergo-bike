@@ -177,6 +177,7 @@ def all_angles(bike_vector, body_vector, arm_angle):
   """
   #Min knee extension angle over sweep 0-2pi
   #if None appears in sweep, return None
+
   ke_ang = [
             item for item in (knee_extension_angle(bike_vector, body_vector, angle*0.2)
             for angle in range(0, 32)) if item != None

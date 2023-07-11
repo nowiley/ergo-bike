@@ -206,13 +206,32 @@ def image_angles(height, img, bike, foot_len, camheight = None, camdist = None, 
                     output_overlayed - True to return overlayed image
     Output: Tuple: (body dimensions in user dict form, angles)
     """
+    # Decompose image name to get camheight and camdist
+    if camheight is None or camdist is None:
+        file_name = img.split("/")[-1][:-4]
+        file_name = file_name.split("-")
+        if len(file_name) != 4:
+            raise ValueError("Image name not in correct format")
+        # catch errors in file name
+        try:
+            camheight = int(file_name[2])
+            camdist = int(file_name[3])
+        except ValueError:
+            raise ValueError("camheight and camdist must be specified correctly in file name or as arguments")
+    else:
+        camdist = int(camdist)
+        camheight = int(camheight)
+
     print(f"Analyzing With Inference Count = {inference_count}: {img}")
     pred, overlayed = analyze(height, img, camheight, camdist, inference_count=inference_count)
     user = decompose_to_dictionary(pred)
+    for key in user:
+        if user[key] < 0:
+            raise ValueError("Negative body dimension predicted")
     body = dict_to_body_vector(user, foot_len, ankle_angle)
     angles = all_angles(bike, body, arm_angle)
     kover = kops(bike, body)
-    # print("\n Predicted Dims: ", user)
+    #print("\n Predicted Dims: ", user)
     # print("\n Predicted Angles: ", angles)
     # print("\n Probabiltiy of Angles", prob_dists(bike, body, arm_angle))
     # print("\n Predicted KOPS: ", kover)

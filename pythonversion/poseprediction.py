@@ -232,4 +232,10 @@ def decompose_to_dictionary(prediction_array):
     base["low_leg"] = base["hip_to_ankle"] - base["hip_to_knee"] + ankle_wrist_offset
     base["up_leg"] = base["hip_to_knee"]
 
+    for key, value in base.items():
+        if value < 0:
+            raise ValueError(
+                "Negative value for dimension "
+                + key
+                )
     return base
