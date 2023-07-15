@@ -45,7 +45,7 @@ def interface_points(bike):
         Sy = bike[0,8] * np.sin(bike[0,6])
         return (Sx, Sy)
     
-    def hand_pos():
+    def hand_pos(headx, heady):
         # IN MM
         BEARING_STACK  = 10
         STEM_E = 20
@@ -53,8 +53,8 @@ def interface_points(bike):
         UXL = BEARING_STACK + bike[0,11] + STEM_E/2
 
         # X and Y of Middle of Stem clamp
-        SCx = UXL * np.cos(bike[0,2])
-        SCy = UXL * np.sin(bike[0,2])
+        SCx = headx - (UXL * np.cos(bike[0,2]))
+        SCy = heady + (UXL * np.sin(bike[0,2]))
 
         #X and Y of handlebar Clamp
         HBx = SCx + bike[0,9] * np.cos((np.pi/2) - bike[0,2] - bike[0,10])
