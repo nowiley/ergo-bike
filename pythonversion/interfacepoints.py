@@ -1,7 +1,7 @@
 import numpy as np
 
 ## Calculate interface points from frame and bike parameters
-def interface_points(bike):
+def interface_points(bike, hbar_type = "drops"):
     """
     Input: in relation to bottom bracket
         Bike np array:
@@ -17,8 +17,9 @@ def interface_points(bike):
         [0,9]: Stem Len
         [0,10]: Stem Angle
         [0,11]: Spacer Amt
-        [0,12]: Hbar Type "(Drops, Mtb, Bullhorn)"
-        [0,13]: Crank Length
+        [0,12]: Crank Length
+        bike = np.array([[DTL, HTL, HTA, HTLE, SH, STL, STA, SPL, SH, SL, SA, SpA, CL]]]])
+        
     Output:
         Tuple of interface points: ((hand x, hand y), (seatx, seaty), (crank length))
     """
@@ -48,7 +49,7 @@ def interface_points(bike):
     def hand_pos(headx, heady):
         # IN MM
         BEARING_STACK  = 10
-        STEM_E = 20
+        STEM_E = 40
         #Total extension of stem above headtube
         UXL = BEARING_STACK + bike[0,11] + STEM_E/2
 
@@ -59,12 +60,13 @@ def interface_points(bike):
         #X and Y of handlebar Clamp
         HBx = SCx + bike[0,9] * np.cos((np.pi/2) - bike[0,2] - bike[0,10])
         HBy = SCy + bike[0,9] * np.sin((np.pi/2) - bike[0,2] - bike[0,10])
+        print("HBx, HBy: ", HBx, HBy)
 
         #x and y of hand
-        match bike[0,12]:
+        match hbar_type:
             case "drops":
                 Hx = HBx + 100
-                Hy = HBy - 100
+                Hy = HBy + 100
             case "mtb":
                 Hx = HBx + 100
                 Hy = HBy - 100
@@ -76,10 +78,13 @@ def interface_points(bike):
         return (Hx, Hy)
 
     htx, hty = top_headtube()
+    print("htx, hty: ", htx, hty)
     sx, sy = seat_check_and_pos()
-    hx, hy = hand_pos()
+    hx, hy = hand_pos(htx, hty)
     
+    return ((hx, hy), (sx, sy), (bike[0,12]))
 
-    return ((hx, hy), (sx, sy), (bike[0,13]))
 
-
+bike = np.array([[550, 200, (75/180)*np.pi, 40, 450, 440, (74/180)*np.pi, 200, 700, 100, (15/180)*np.pi, 10, 175]])
+#print(bike[1,0])l
+print(interface_points(bike))
