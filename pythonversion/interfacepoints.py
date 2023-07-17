@@ -66,25 +66,21 @@ def interface_points(bike, hbar_type = "drops"):
         match hbar_type:
             case "drops":
                 Hx = HBx + 100
-                Hy = HBy + 100
+                Hy = HBy + 20
             case "mtb":
-                Hx = HBx + 100
-                Hy = HBy - 100
+                Hx = HBx - 20
+                Hy = HBy + 0
             case "bullhorn":
                 Hx = HBx + 100
-                Hy = HBy - 100
+                Hy = HBy + 10
             case _:
                 raise ValueError(f"Invalid handlebar type: {bike[0,12]}, must be 'drops', 'mtb', or 'bullhorn'")
         return (Hx, Hy)
 
-    htx, hty = top_headtube()
-    print("htx, hty: ", htx, hty)
-    sx, sy = seat_check_and_pos()
-    hx, hy = hand_pos(htx, hty)
+    # Calculate interface points
+    htx, hty = top_headtube() # Top of headtube
+    sx, sy = seat_check_and_pos() # Seat position uses saddle height
+    hx, hy = hand_pos(htx, hty) # Hand position uses top of headtube position
     
-    return ((hx, hy), (sx, sy), (bike[0,12]))
+    return ((hx, hy), (sx, sy), bike[0,12])
 
-
-bike = np.array([[550, 200, (75/180)*np.pi, 40, 450, 440, (74/180)*np.pi, 200, 700, 100, (15/180)*np.pi, 10, 175]])
-#print(bike[1,0])l
-print(interface_points(bike))

@@ -198,9 +198,9 @@ def dict_to_body_vector(user_dict, foot_len, ankle_angle):
     return np.array([user_dict["low_leg"], user_dict["up_leg"], user_dict["tor_len"], user_dict["arm_len"], foot_len, deg_to_r(ankle_angle)]).reshape(6,1)
 
 #Image to body dimensions and angles
-def image_angles(height, img, bike, foot_len, camheight = None, camdist = None, ankle_angle = 105, arm_angle = 150, inference_count=10, output_overlayed = False):
+def image_angles(height, foot_len, img, bike, camheight = None, camdist = None, ankle_angle = 105, arm_angle = 150, inference_count=10, output_overlayed = False):
     """ 
-    Input: height, img, bike vector, foot length
+    Input: height, foot len, img path, bike vector
         Optional: camheight, camdist (if image not named according to format) 
                     ankle_angle, arm_angle, inference_count, 
                     output_overlayed - True to return overlayed image
