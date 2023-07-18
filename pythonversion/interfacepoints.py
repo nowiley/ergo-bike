@@ -23,6 +23,11 @@ def interface_points(bike, hbar_type = "drops"):
     Output:
         Tuple of interface points: ((hand x, hand y), (seatx, seaty), (crank length))
     """
+    # Constants in mm
+    BEARING_STACK = 10 # Stack height of bearing
+    STEM_E = 40 # Stem extension
+
+
     def top_headtube():
         # Headtube functional length
         newHTL = bike[0,1] - bike[0,3]
@@ -47,9 +52,6 @@ def interface_points(bike, hbar_type = "drops"):
         return (Sx, Sy)
     
     def hand_pos(headx, heady):
-        # IN MM
-        BEARING_STACK  = 10
-        STEM_E = 40
         #Total extension of stem above headtube
         UXL = BEARING_STACK + bike[0,11] + STEM_E/2
 
@@ -60,7 +62,7 @@ def interface_points(bike, hbar_type = "drops"):
         #X and Y of handlebar Clamp
         HBx = SCx + bike[0,9] * np.cos((np.pi/2) - bike[0,2] - bike[0,10])
         HBy = SCy + bike[0,9] * np.sin((np.pi/2) - bike[0,2] - bike[0,10])
-        print("HBx, HBy: ", HBx, HBy)
+        print("HBX, HBY", HBx, HBy)
 
         #x and y of hand
         match hbar_type:
@@ -84,3 +86,6 @@ def interface_points(bike, hbar_type = "drops"):
     
     return ((hx, hy), (sx, sy), bike[0,12])
 
+
+# bike = np.array([[500, 100, (75/180)*np.pi, 40, 450, 440, (74/180)*np.pi, 200, 700, 100, (20/180)*np.pi, 10, 175]])
+# print(interface_points(bike))

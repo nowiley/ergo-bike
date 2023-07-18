@@ -165,3 +165,31 @@ Prints table comparing predicted and actual dimensions.
 Prints images with pose overlayed.
 
 ---
+
+### interface_points(bike, hbar_type = "drops")
+**Description:**
+* Calculates the interface points (for standard bike_vector) from structural bike vector (13 Dim).
+
+**Input:**
+- bike: Structural bike vector (13 Dim)
+  - Bike np array:
+    - (0,0): DT Len,
+    - (0,1): HT Len
+    - (0,2): HT Angle
+    - (0,3): HT Lower Extension
+    - (0,4): Stack Height
+    - (0,5): ST Len
+    - (0,6): ST Angle
+    - (0,7): Seatpost Len
+    - (0,8): Saddle height
+    - (0,9): Stem Len
+    - (0,1): Stem Angle
+    - (0,1): Spacer Amt
+    - (0,1): Crank Length
+- hbar_type: String corresponding to handlebar type ("drops", "mtb", "bullhorn")
+
+**Output:**
+- Tuple of (hbar, saddle, pedal)
+  - hbar = Handlebar interface point (x, y)
+  - saddle = Saddle interface point (x, y)
+  - crank length = Crank length
