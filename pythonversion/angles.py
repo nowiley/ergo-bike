@@ -36,34 +36,34 @@ def knee_extension_angle(bike_vector, body_vector, CA, ret_a2=False):
     #decomposing body vector
     sq_body = np.square(body_vector)
 
-    LL = body_vector[0, 0]
-    UL = body_vector[1, 0]
-    TL = body_vector[2, 0]
-    AL = body_vector[3, 0]
-    FL = body_vector[4, 0]
-    AA = body_vector[5, 0]
+    LL = body_vector[:, 0]
+    UL = body_vector[:, 1]
+    TL = body_vector[:, 2]
+    AL = body_vector[:, 3]
+    FL = body_vector[:, 4]
+    AA = body_vector[:, 5]
 
-    LL_s = sq_body[0, 0]
-    UL_s = sq_body[1, 0]
-    TL_s = sq_body[2, 0]
-    AL_s = sq_body[3, 0]
-    FL_s = sq_body[4, 0]
-    AA_s = sq_body[5, 0]
+    LL_s = sq_body[:, 0]
+    UL_s = sq_body[:, 1]
+    TL_s = sq_body[:, 2]
+    AL_s = sq_body[:, 3]
+    FL_s = sq_body[:, 4]
+    AA_s = sq_body[:, 5]
 
     # decomposing bike vector
     sq_bike = np.square(bike_vector)
 
-    SX = bike_vector[0, 0]
-    SY = bike_vector[1, 0]
-    HX = bike_vector[2, 0]
-    HY = bike_vector[3, 0]
-    CL = bike_vector[4, 0]
+    SX = bike_vector[:, 0]
+    SY = bike_vector[:, 1]
+    HX = bike_vector[:, 2]
+    HY = bike_vector[:, 3]
+    CL = bike_vector[:, 4]
 
-    SX_s = sq_bike[0, 0]
-    SY_s = sq_bike[1, 0]
-    HX_s = sq_bike[2, 0]
-    HY_s = sq_bike[3, 0]
-    CL_s = sq_bike[4, 0]
+    SX_s = sq_bike[:, 0]
+    SY_s = sq_bike[:, 1]
+    HX_s = sq_bike[:, 2]
+    HY_s = sq_bike[:, 3]
+    CL_s = sq_bike[:, 4]
 
     #Explicit checks for triangle inequality
     functional_lowleg_foot = np.sqrt(FL_s + LL_s - (2 * FL * LL * np.cos(AA)))
@@ -99,6 +99,7 @@ def knee_extension_angle(bike_vector, body_vector, CA, ret_a2=False):
         return None
 
     return alpha_3 + alpha_4
+
 
 
 def back_armpit_angles(bike_vector, body_vector, elbow_angle):
@@ -139,8 +140,8 @@ def back_armpit_angles(bike_vector, body_vector, elbow_angle):
     tors_ang = np.arccos((TL**2 + sth_dist**2 - x_1) / (2 * TL * sth_dist))
 
     #Explicit checks for triangle inequality
-    if TL + x_1 < sth_dist:
-        return (None, None)
+    # if TL + x_1 < sth_dist:
+    #     return (None, None)
 
     #if not possible return None
     if np.isnan(tors_ang):
@@ -264,4 +265,15 @@ def bike_offset(bike_vector, thickness, setback):
     new_bike = np.array([[SX], [SY], [HX], [HY], [CL]])
     return new_bike
 
-    
+LL = 19
+UL = 18
+TL = 21
+AL = 24
+FL = 5.5
+AA = deg_to_r(107)
+body_3 = np.array([[LL, UL, TL, AL, FL, AA]])
+body_5 = np.array([[LL, UL, TL, AL, FL, AA]])
+body_4 = np.vstack((body_3, body_5))
+bike_4 = np.array([[-7., 23, 16.5, 25.25, 7]])
+
+print(knee_extension_angle(bike_4, body_4, deg_to_r(300)))
