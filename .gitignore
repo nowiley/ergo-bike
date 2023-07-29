@@ -7,7 +7,10 @@
 *.gif
 *.GIF
 *.pyc
+# Test Files #
 all_res.pkl
 croptest.pkl
 loss_functionsv1q.py
 test.py
+# Data #
+*.csv 

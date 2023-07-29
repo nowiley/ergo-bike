@@ -265,15 +265,15 @@ def bike_offset(bike_vector, thickness, setback):
     new_bike = np.array([[SX], [SY], [HX], [HY], [CL]])
     return new_bike
 
-LL = 19
-UL = 18
-TL = 21
-AL = 24
-FL = 5.5
-AA = deg_to_r(107)
-body_3 = np.array([[LL, UL, TL, AL, FL, AA]])
-body_5 = np.array([[LL, UL, TL, AL, FL, AA]])
-body_4 = np.vstack((body_3, body_5))
-bike_4 = np.array([[-7., 23, 16.5, 25.25, 7]])
+# LL = 19
+# UL = 18
+# TL = 21
+# AL = 24
+# FL = 5.5
+# AA = deg_to_r(107)
+# body_3 = np.array([[LL, UL, TL, AL, FL, AA]])
+# body_5 = np.array([[LL, UL, TL, AL, FL, AA]])
+# body_4 = np.vstack((body_3, body_5))
+# bike_4 = np.array([[-7., 23, 16.5, 25.25, 7]])
 
-print(knee_extension_angle(bike_4, body_4, deg_to_r(300)))
+# print(knee_extension_angle(bike_4, body_4, deg_to_r(300)))
