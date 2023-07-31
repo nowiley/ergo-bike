@@ -154,14 +154,7 @@ def bike_body_calculation(bikes, body):
     valid_mask = validity_mask(int_points, br_angles_body, br_arm_angles).flatten()
     aug_nan_mask = np.isnan(out_aug.values).any(axis=1)
     angle_nan_mask = np.isnan(out_angles.values).any(axis=1)
-    combined_nan_mask = valid_mask
-    #combined_nan_mask = np.logical_or(aug_nan_mask, angle_nan_mask)
-    #combined_nan_mask = np.logical_or(combined_nan_mask, valid_mask)[:, np.newaxis]
-    # print("valid_mask", valid_mask)
-    # print("angle_nan_mask", angle_nan_mask)
-    # print("aug_nan_mask", aug_nan_mask)
-    # print("combined_nan_mask", combined_nan_mask)
-
+    combined_nan_mask = aug_nan_mask | valid_mask | angle_nan_mask
 
     # Remove NaN rows from interface points, augmented parameters, and angles
     no_nan_int_points = int_points_df[~combined_nan_mask]/1000 # convert to m
