@@ -29,6 +29,8 @@ def validity_mask(bikes, bodies, arm_angle):
     """
     Input: bikes, bodies, arm_angles matricies n x 5, n x 8, nx1
     Output: n x 1 True/False mask for valid/invalid
+    TRUE = NAN
+    FALSE = no Nan
     Checks for triangle inequality for:
         Leg
         Arm/torso
@@ -37,7 +39,8 @@ def validity_mask(bikes, bodies, arm_angle):
     # Straight line distance between saddle position and handlebar position
     bike_reach = np.sqrt(np.square(-bikes[:, 0:1] - bikes[:,3:4]) + np.square(bikes[:, 1:2] - bikes[:, 4:5]))
     # Armlength considering arm bent at elbow
-    functional_arms = np.sqrt( (np.square(bodies[:, 3:4]/2)) * (1 - np.cos(deg_to_r(arm_angle))))
+    functional_arms = np.sqrt( np.square(bodies[:, 3:4]/2) + np.square(bodies[:, 3:4]/2) - 2 * np.square(bodies[:, 3:4]/2) * np.cos(deg_to_r(arm_angle)))
+    print("functional arms", functional_arms)
     # Max reach of functional arms + torso
     max_body_reach = bodies[:, 2:3] + functional_arms
     # Mask where sum of arms + torso is greater than straightline saddle to handlebar

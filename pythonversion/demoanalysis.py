@@ -154,7 +154,7 @@ def bike_body_calculation(bikes, body):
     valid_mask = validity_mask(int_points, br_angles_body, br_arm_angles).flatten()
     aug_nan_mask = np.isnan(out_aug.values).any(axis=1)
     angle_nan_mask = np.isnan(out_angles.values).any(axis=1)
-    combined_nan_mask = aug_nan_mask | valid_mask | angle_nan_mask
+    combined_nan_mask = aug_nan_mask | valid_mask
 
     # Remove NaN rows from interface points, augmented parameters, and angles
     no_nan_int_points = int_points_df[~combined_nan_mask]/1000 # convert to m
@@ -163,7 +163,8 @@ def bike_body_calculation(bikes, body):
     print("no_nan_int_points\n",no_nan_int_points)
 
     # Calculate aero drag
-    pred_aero = aerodynamic_drag(no_nan_int_points, body, no_nan_aug)[:, np.newaxis]
+    #pred_aero = aerodynamic_drag(no_nan_int_points, body, no_nan_aug)[:, np.newaxis]
+    pred_aero = np.zeros((len(no_nan_angles), 1))
 
     # Concatenate angle outputs and aerodynamic drag
     out = np.hstack((no_nan_angles.values, pred_aero))
@@ -176,8 +177,8 @@ bikes_df = pd.read_csv("/Users/noahwiley/Documents/Bike UROP/MeasureML-main/Fram
 # print("bikes df\n",bikes_df)
 int_points_global = interface_points(bikes_df.values)
 # print("int_points_global\n", int_points_global)
-LL = 19 * 25.4 
-UL = 18 * 25.4
+LL = 22 * 25.4 
+UL = 22 * 25.4
 TL = 21 * 25.4
 AL = 24 * 25.4
 FL = 5.5 * 25.4
