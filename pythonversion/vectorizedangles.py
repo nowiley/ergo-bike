@@ -29,8 +29,8 @@ def validity_mask(bikes, bodies, arm_angle):
     """
     Input: bikes, bodies, arm_angles matricies n x 5, n x 8, nx1
     Output: n x 1 True/False mask for valid/invalid
-    TRUE = NAN
-    FALSE = no Nan
+    TRUE = Violation
+    FALSE = NO violation
     Checks for triangle inequality for:
         Leg
         Arm/torso
@@ -40,12 +40,10 @@ def validity_mask(bikes, bodies, arm_angle):
     bike_reach = np.sqrt(np.square(-bikes[:, 0:1] - bikes[:,3:4]) + np.square(bikes[:, 1:2] - bikes[:, 4:5]))
     # Armlength considering arm bent at elbow
     functional_arms = np.sqrt( np.square(bodies[:, 3:4]/2) + np.square(bodies[:, 3:4]/2) - 2 * np.square(bodies[:, 3:4]/2) * np.cos(deg_to_r(arm_angle)))
-    print("functional arms", functional_arms)
-    # Max reach of functional arms + torso
-    max_body_reach = bodies[:, 2:3] + functional_arms
-    # Mask where sum of arms + torso is greater than straightline saddle to handlebar
-    mask_upper = max_body_reach <= bike_reach
+    # Mask where sum of any 2 sides are greater than 3rd side for all side combos
+    mask_upper = (functional_arms + bodies[:, 2:3] > bike_reach) & (functional_arms + bike_reach > bodies[:, 2:3]) & (bodies[:, 2:3] + bike_reach > functional_arms)
     
+
     ### Mask invalid leg combos ###
     # Functional low leg length (considering ankle angle and foot length)
     a_2 = np.square(bodies[:, 4:5])  
@@ -53,17 +51,14 @@ def validity_mask(bikes, bodies, arm_angle):
     ab_cos = 2 * bodies[:, 4:5] * bodies[:, 0:1] * np.cos(bodies[:, 5:6]* (np.pi/180))
     funcitonal_low_leg = np.sqrt(a_2 + b_2 - ab_cos)
     
-    # Max leg length (functional low leg + upper leg)
-    max_leg = bodies[:, 1:2] + funcitonal_low_leg
-
     # Straightline distance from seat to pedal at longest part of pedal stroke
     straightline_seat = np.sqrt(np.square(bikes[:, 0:1]) + np.square(bikes[:, 1:2])) + bikes[:, 4:5]
 
-    # Mask where max leg length is greater than straightline seat to pedal
-    mask_lower = max_leg <= straightline_seat
+    # Mask where sum of any 2 sides are greater than 3rd side for all side combos
+    mask_lower = (funcitonal_low_leg + bodies[:, 1:2] > straightline_seat) & (funcitonal_low_leg + straightline_seat > bodies[:, 1:2]) & (bodies[:, 1:2] + straightline_seat > funcitonal_low_leg)
 
     #Combine and return masks
-    return np.logical_or(mask_upper, mask_lower)
+    return ~(np.logical_and(mask_upper, mask_lower))
 
 
 
@@ -211,13 +206,12 @@ def all_angles(bike_vectors, body_vectors, arm_angles):
     Output: tuple (min_ke angle, back angle, awrist angle) in degrees
     """
     #Min knee extension angle over sweep 0-2pi np.maximum propogates nans
-    cur_min = knee_extension_angle(bike_vectors, body_vectors, 0)
+    cur_min = knee_extension_angle(bike_vectors, body_vectors, 90)
     
-    for test_ca in range(180,360,10):
+    for test_ca in range(180,360):
         cur_test = knee_extension_angle(bike_vectors, body_vectors, test_ca)
         cur_min = np.minimum(cur_min, cur_test)
         #print(f"Testing {test_ca}: cur_test = {cur_test} cur_min = {cur_min}")
-
     ke_ang = cur_min
 
     # back angle, armpit to wrist angle
