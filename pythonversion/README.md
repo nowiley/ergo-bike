@@ -2,6 +2,51 @@
 #### Function Documentation
 ---
 
+### bike_body_calculation(strucutural_bike_vectors, large_body_vector):
+**Description:**
+* Calculates the predicted body angles and aerodynamic drag for a given bike and body system.
+
+**Input:**
+- structural_bike_vectors (n x 14 matrix) **IN Millimeters and Degrees**
+  - PD Dataframe with columns:
+    - DT Lenength
+    - HT Length
+    - HT Angle
+    - HT LX
+    - Stack height
+    - ST Length
+    - ST Angle
+    - Seatpost LENGTH
+    - Saddle height
+    - Stem length
+    - Stem Angle
+    - Headset spacers
+    - Crank length
+    - Handlebar Style
+- large_body_vector (1 x 8 matrix)
+  - np array:
+    - (0,0): Lower Leg Length
+    - (0,1): Upper Leg Length
+    - (0,2): Trunk Length
+    - (0,3): Arm Length
+    - (0,4): Foot Length
+    - (0,5): Ankle Angle
+    - (0,6): Shoulder Witdh
+    - (0,7): Height
+
+**Output:**
+- PD Dataframe:
+  - Columns:
+    - Knee Extension Angle
+    - Back Angle
+    - Armpit to Wrist Angle
+    - Aerodynamic Drag
+
+**Notes:**
+- Uses default values for arm angle = 150 deg, headset bearing length = 10 mm, and stem clamp length = 40 mm. These can be changed in demoanalysis.py and interfacepoints.py.
+
+---
+
 ### image_angles(image_path, bike_vector, body_vector, foot_length, (inference_count = 10), (ankle_angle = 105), (arm_angle = 150))
 
 **Description:**

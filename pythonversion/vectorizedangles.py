@@ -61,8 +61,6 @@ def validity_mask(bikes, bodies, arm_angle):
     return ~(np.logical_and(mask_upper, mask_lower))
 
 
-
-
 ###################################
 # FUNCTIONS FOR CALCUATING ANGLES #
 ###################################
@@ -180,12 +178,10 @@ def back_armpit_angles(bike_vectors, body_vectors, elbow_angles):
     # Calculating angle offset (horizontal to sth_dist) for torso angle
     sth_ang = np.arctan2((HY - SY), (HX - SX))
 
-
     # Uses new dist and law of cosines to find torso angle
     x_1 = (AL / 2) ** 2 + (AL / 2) ** 2 - 2 * (AL / 2) * (AL / 2) * np.cos(elbow_angle)
 
     tors_ang = np.arccos((TL**2 + sth_dist**2 - x_1) / (2 * TL * sth_dist))
-
 
     # Adds offset to get back angle with horizontal
     back_angle = tors_ang + sth_ang
