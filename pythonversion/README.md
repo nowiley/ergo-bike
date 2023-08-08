@@ -43,7 +43,7 @@
     - Aerodynamic Drag
 
 **Notes:**
-- Uses default values for arm angle = 150 deg, headset bearing length = 10 mm, and stem clamp length = 40 mm. These can be changed in demoanalysis.py and interfacepoints.py.
+- Uses default values for arm angle = 150 deg, headset bearing length = 10 mm, and stem clamp length = 40 mm. These can be changed in demoanalysis.py and interfa
 
 ---
 

@@ -222,7 +222,7 @@ def decompose_to_dictionary(prediction_array):
         "hip_to_ankle": (prediction_array[2]),
         "hip_to_knee": prediction_array[3],
         "shoulder_to_wrist": prediction_array[4],
-        # "sh_width": prediction_array[5],
+        "sh_width": prediction_array[5],
     }
     # GETTING OFFSETS
     # Ankle height from floor to lateral malleolus and grip center to wrist are the same ratio
