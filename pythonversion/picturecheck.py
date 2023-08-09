@@ -13,6 +13,11 @@ GLOBAL_IMGCHECK_MODEL = YOLO("yolov8n.pt")
 
 # Basically: Ensure image has 1 person, and that person takes up most of the image by height
 # provides extra data for debugging
+from ultralytics import YOLO
+
+#Using nano model for faster detection
+GLOBAL_IMGCHECK_MODEL = YOLO("yolov8n.pt")
+
 def image_check(image_path):
   """
   Checks for poorly formatted images or images that are not humans
@@ -35,8 +40,8 @@ def image_check(image_path):
 
   # Loop through all objects
   for obj in detected_objects:
-    # If person object not detected (obj[5] != 0) continue
-    if obj[5] != 0:
+    # If person object not detected (obj[5] != 0) with >= 75% conf continue
+    if obj[5] != 0 or obj[4] < 0.75:
       continue
 
     #Increment person counter:
@@ -56,7 +61,7 @@ def image_check(image_path):
 
   # If != 1 person detected or max_ratio < 80%, not a valid image
   good_image = True
-  if ppl_in_frame != 1 or max_ratio < 0.8 or conf_of_max_ratio < 0.6:
+  if ppl_in_frame != 1 or max_ratio < 0.8:
     good_image = False
   
   return (good_image, ppl_in_frame, float(max_ratio), float(conf_of_max_ratio), b_box_of_max_ratio)
